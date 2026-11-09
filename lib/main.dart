@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:money_manager/pages/homepage.dart';
+import 'package:money_manager/pages/history.dart';
+import 'package:money_manager/pages/Statistics.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Money Manager',
       theme: ThemeData(
         colorScheme: .fromSeed(seedColor: const Color(0xFF00897B)),
       ),
@@ -31,11 +34,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int currentIndex = 0;
 
-  final List<Widget> halaman = const [
-    Center(child: Text('Home')),
-    Center(child: Text('History')),
-    Center(child: Text('Statistics')),
-  ];
+  final List<Widget> _halaman = const [Homepage(), History(), Statistics()];
 
   @override
   Widget build(BuildContext context) {
@@ -45,12 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       backgroundColor: Color(0xFFF5F7F8),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: .start,
-          children: [const Text('test')],
-        ),
-      ),
+      body: _halaman[currentIndex],
       bottomNavigationBar: NavigationBar(
         selectedIndex: currentIndex,
         onDestinationSelected: (index) {

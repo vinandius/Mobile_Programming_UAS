@@ -3,8 +3,7 @@ import 'package:money_manager/pages/homepage.dart';
 import 'package:money_manager/pages/history.dart';
 import 'package:money_manager/pages/Statistics.dart';
 import 'package:money_manager/pages/login.dart';
-import 'package:money_manager/pages/register.dart';
-import 'package:money_manager/models/User.dart';
+import 'package:money_manager/models/user.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,6 +16,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Money Manager',
       theme: ThemeData(
         colorScheme: .fromSeed(seedColor: const Color(0xFF00897B)),

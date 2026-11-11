@@ -11,25 +11,25 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState() extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> {
   final _emailCtrl = TextEditingController();
-  final _passwordCtrl = TextEditingController();
+  final _passCtrl = TextEditingController();
   bool _loading = false;
   String? _error;
 
   @override
   void dispose() {
     _emailCtrl.dispose();
-    _passwordCtrl.dispose();
+    _passCtrl.dispose();
     super.dispose();
   }
 
   Future<void> _login() async {
     final email = _emailCtrl.text.trim();
-    final password = _passwordCtrl.text.trim();
+    final pass = _passCtrl.text;
 
-    if (email.isEmpty || password.isEmpty) {
-      setState(() => _error = 'Something went wrong...');
+    if (email.isEmpty || pass.isEmpty) {
+      setState(() => _error = 'Email dan password wajib diisi');
       return;
     }
 
@@ -38,19 +38,22 @@ class _LoginPageState() extends State<LoginPage> {
       _error = null;
     });
 
-    final user = await DbHelper.instance.login(email, password);
+    final user = await DbHelper.instance.login(email, pass);
+
+    if (!mounted) return;
 
     if (user == null) {
       setState(() {
         _loading = false;
-        _error = "Something went wrong...";
+        _error = 'Email atau password salah';
       });
       return;
     }
 
+    // pushReplacement: halaman login dibuang, jadi tombol back tidak kembali ke login
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) => MyHomePage(user: user as dynamic)),
+      MaterialPageRoute(builder: (_) => MyHomePage(user: user)),
     );
   }
 
@@ -84,7 +87,7 @@ class _LoginPageState() extends State<LoginPage> {
                 ),
                 const SizedBox(height: 16),
                 TextField(
-                  controller: _passwordCtrl,
+                  controller: _passCtrl,
                   obscureText: true,
                   decoration: const InputDecoration(
                     labelText: 'Password',
@@ -92,7 +95,7 @@ class _LoginPageState() extends State<LoginPage> {
                   ),
                 ),
                 if (_error != null) ...[
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 12),
                   Text(_error!, style: const TextStyle(color: Colors.red)),
                 ],
                 const SizedBox(height: 24),
@@ -116,7 +119,7 @@ class _LoginPageState() extends State<LoginPage> {
                       MaterialPageRoute(builder: (_) => const RegisterPage()),
                     );
                   },
-                  child: const Text('Belum punya akun? Klik untuk register'),
+                  child: const Text('Belum punya akun? Daftar'),
                 ),
               ],
             ),

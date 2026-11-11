@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:money_manager/pages/homepage.dart';
 import 'package:money_manager/pages/history.dart';
 import 'package:money_manager/pages/Statistics.dart';
+import 'package:money_manager/pages/login.dart';
+import 'package:money_manager/pages/register.dart';
+import 'package:money_manager/models/User.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,14 +21,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: .fromSeed(seedColor: const Color(0xFF00897B)),
       ),
-      home: const MyHomePage(title: 'Money Manager'),
+      home: const LoginPage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
+  const MyHomePage({super.key, required this.user});
+  final User user;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -34,17 +37,17 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int currentIndex = 0;
 
-  final List<Widget> _halaman = const [Homepage(), History(), Statistics()];
+  final List<Widget> halaman = const [Homepage(), History(), Statistics()];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF00897B),
-        title: Text(widget.title),
+        title: Text("Hello ${widget.user.name}"),
       ),
       backgroundColor: Color(0xFFF5F7F8),
-      body: _halaman[currentIndex],
+      body: halaman[currentIndex],
       bottomNavigationBar: NavigationBar(
         selectedIndex: currentIndex,
         onDestinationSelected: (index) {

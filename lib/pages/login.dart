@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../providers/auth_provider.dart';
 
 import '../database/db_helper.dart';
 import '../main.dart';
 import 'register.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
   bool _loading = false;
@@ -50,10 +53,12 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
+    ref.read(currentUserProvider.notifier).login(user);
+
     // pushReplacement: halaman login dibuang, jadi tombol back tidak kembali ke login
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) => MyHomePage(user: user)),
+      MaterialPageRoute(builder: (_) => const MyHomePage()),
     );
   }
 

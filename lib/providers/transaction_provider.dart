@@ -24,8 +24,8 @@ class TransactionNotifier extends AsyncNotifier<List<Transactions>> {
     await future;
   }
 
-  Future<void> delete(Transactions t) async {
-    await DbHelper.instance.deleteTransactions(t);
+  Future<void> delete(int id) async {
+    await DbHelper.instance.deleteTransactions(id);
     ref.invalidateSelf();
     await future;
   }

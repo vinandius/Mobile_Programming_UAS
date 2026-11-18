@@ -6,9 +6,10 @@ import 'package:money_manager/pages/Statistics.dart';
 import 'package:money_manager/pages/login.dart';
 import 'package:money_manager/models/user.dart';
 import 'package:money_manager/pages/account.dart';
+import 'package:money_manager/providers/auth_provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -28,15 +29,14 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.user});
-  final User user;
+class MyHomePage extends ConsumerStatefulWidget {
+  const MyHomePage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  ConsumerState<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends ConsumerState<MyHomePage> {
   int currentIndex = 0;
 
   final List<Widget> halaman = const [
@@ -48,10 +48,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(currentUserProvider);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF00897B),
-        title: Text("Hello ${widget.user.name}"),
+        title: Text("Hello ${user?.name ?? ''}"),
       ),
       backgroundColor: Color(0xFFF5F7F8),
       body: halaman[currentIndex],

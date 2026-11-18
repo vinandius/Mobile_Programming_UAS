@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_manager/pages/homepage.dart';
 import 'package:money_manager/pages/history.dart';
 import 'package:money_manager/pages/Statistics.dart';
 import 'package:money_manager/pages/login.dart';
 import 'package:money_manager/models/user.dart';
+import 'package:money_manager/pages/account.dart';
 
 void main() {
   runApp(const MyApp());
@@ -37,7 +39,12 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int currentIndex = 0;
 
-  final List<Widget> halaman = const [Homepage(), History(), Statistics()];
+  final List<Widget> halaman = const [
+    Homepage(),
+    History(),
+    Statistics(),
+    Account(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +71,10 @@ class _MyHomePageState extends State<MyHomePage> {
           NavigationDestination(
             icon: Icon(Icons.pie_chart),
             label: 'Statistics',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.account_box),
+            label: 'Account',
           ),
         ],
       ),

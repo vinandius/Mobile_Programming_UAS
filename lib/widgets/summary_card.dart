@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_manager/pages/history.dart';
 import 'package:money_manager/providers/transaction_provider.dart';
 
 class SummaryCard extends ConsumerWidget {
@@ -11,6 +12,7 @@ class SummaryCard extends ConsumerWidget {
 
     return Container(
       width: double.infinity,
+      height: 250,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: const Color(0xFF00897B),
@@ -56,6 +58,31 @@ class SummaryCard extends ConsumerWidget {
                       Text(
                         'Rp${summary.expense}',
                         style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IntrinsicHeight(
+            child: Row(
+              children: [
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      const Text('Details'),
+                      IconButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const History(),
+                            ),
+                          );
+                        },
+                        icon: Icon(Icons.receipt_long_outlined),
                       ),
                     ],
                   ),

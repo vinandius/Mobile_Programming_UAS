@@ -39,12 +39,7 @@ class MyHomePage extends ConsumerStatefulWidget {
 class _MyHomePageState extends ConsumerState<MyHomePage> {
   int currentIndex = 0;
 
-  final List<Widget> halaman = const [
-    Homepage(),
-    History(),
-    Statistics(),
-    Account(),
-  ];
+  final List<Widget> halaman = const [Homepage(), History(), Statistics()];
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +48,17 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       appBar: AppBar(
         backgroundColor: Color(0xFF00897B),
         title: Text("Hello ${user?.name ?? ''}"),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const Account()),
+              );
+            },
+            icon: Icon(Icons.account_circle),
+          ),
+        ],
       ),
       backgroundColor: Color(0xFFF5F7F8),
       body: halaman[currentIndex],
@@ -72,10 +78,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
           NavigationDestination(
             icon: Icon(Icons.pie_chart),
             label: 'Statistics',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.account_box),
-            label: 'Account',
           ),
         ],
       ),

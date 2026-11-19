@@ -1,10 +1,6 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_manager/providers/transaction_provider.dart';
-
-import '../models/transaction.dart';
 
 class SummaryCard extends ConsumerWidget {
   const SummaryCard({super.key});

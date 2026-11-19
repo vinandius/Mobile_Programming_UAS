@@ -6,7 +6,10 @@ class Account extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Account Page')),
+      appBar: AppBar(
+        backgroundColor: Color(0xFF00897B),
+        title: Text('Account Page'),
+      ),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(15),

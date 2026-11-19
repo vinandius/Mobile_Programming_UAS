@@ -1,4 +1,4 @@
-class Transactions {
+class Transaction {
   final int? id;
   final int userId;
   final String title;
@@ -8,7 +8,7 @@ class Transactions {
   final DateTime date;
   final String? note;
 
-  Transactions({
+  Transaction({
     this.id,
     required this.userId,
     required this.title,
@@ -16,7 +16,7 @@ class Transactions {
     required this.type,
     required this.category,
     required this.date,
-    required this.note,
+    this.note,
   });
 
   Map<String, dynamic> toMap() {
@@ -32,8 +32,8 @@ class Transactions {
     };
   }
 
-  factory Transactions.fromMap(Map<String, dynamic> map) {
-    return Transactions(
+  factory Transaction.fromMap(Map<String, dynamic> map) {
+    return Transaction(
       id: map['id'] as int?,
       userId: map['userId'] as int,
       title: map['title'] as String,
@@ -41,7 +41,7 @@ class Transactions {
       type: map['type'] as String,
       category: map['category'] as String,
       date: map['date'] as DateTime,
-      note: map['note'] as String,
+      note: map['note'] as String?,
     );
   }
 }

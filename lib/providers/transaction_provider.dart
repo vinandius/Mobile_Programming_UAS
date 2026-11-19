@@ -1,24 +1,24 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../database/db_helper.dart';
-import '../models/transactions.dart';
+import '../models/transaction.dart';
 import 'auth_provider.dart';
 
-class TransactionNotifier extends AsyncNotifier<List<Transactions>> {
+class TransactionNotifier extends AsyncNotifier<List<Transaction>> {
   @override
-  Future<List<Transactions>> build() async {
+  Future<List<Transaction>> build() async {
     final user = ref.watch(currentUserProvider);
     if (user == null) return [];
     return DbHelper.instance.getTransactions(user.id!);
   }
 
-  Future<void> add(Transactions t) async {
+  Future<void> add(Transaction t) async {
     await DbHelper.instance.addTransaction(t);
     ref.invalidateSelf();
     await future;
   }
 
-  Future<void> edit(Transactions t) async {
+  Future<void> edit(Transaction t) async {
     await DbHelper.instance.editTransactions(t);
     ref.invalidateSelf();
     await future;
@@ -32,7 +32,7 @@ class TransactionNotifier extends AsyncNotifier<List<Transactions>> {
 }
 
 final transactionProvider =
-    AsyncNotifierProvider<TransactionNotifier, List<Transactions>>(
+    AsyncNotifierProvider<TransactionNotifier, List<Transaction>>(
       TransactionNotifier.new,
     );
 

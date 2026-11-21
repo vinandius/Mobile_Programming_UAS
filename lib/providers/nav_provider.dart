@@ -7,6 +7,6 @@ class NavIndexNotifier extends Notifier<int> {
   void setIndex(int index) => state = index;
 }
 
-final NavIndexProvider = NotifierProvider<NavIndexNotifier, int>(
+final navIndexProvider = NotifierProvider<NavIndexNotifier, int>(
   NavIndexNotifier.new,
 );

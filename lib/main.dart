@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:money_manager/pages/homepage.dart';
-import 'package:money_manager/pages/history.dart';
-import 'package:money_manager/pages/Statistics.dart';
+import 'package:money_manager/pages/settings_page.dart';
+import 'package:money_manager/pages/trans_page.dart';
+import 'package:money_manager/pages/stats_page.dart';
+import 'package:money_manager/pages/accounts_page.dart';
 import 'package:money_manager/pages/login.dart';
 import 'package:money_manager/models/user.dart';
 import 'package:money_manager/pages/account.dart';
 import 'package:money_manager/providers/auth_provider.dart';
+
+import './providers/nav_provider.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -37,48 +40,35 @@ class MyHomePage extends ConsumerStatefulWidget {
 }
 
 class _MyHomePageState extends ConsumerState<MyHomePage> {
-  int currentIndex = 0;
+  final List<Widget> halaman = const [
+    TransPage(),
+    StatsPage(),
+    AccountsPage(),
+    SettingsPage(),
+  ];
 
-  final List<Widget> halaman = const [Homepage(), History(), Statistics()];
+  static const List<String> _judul = ['Trans', 'Stats', 'Accounts', 'Settings'];
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(currentUserProvider);
+    final currentIndex = ref.watch(navIndexProvider);
+
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFF00897B),
-        title: Text("Hello ${user?.name ?? ''}"),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const Account()),
-              );
-            },
-            icon: Icon(Icons.account_circle),
-          ),
-        ],
-      ),
       backgroundColor: Color(0xFFF5F7F8),
       body: halaman[currentIndex],
       bottomNavigationBar: NavigationBar(
         selectedIndex: currentIndex,
         onDestinationSelected: (index) {
-          setState(() {
-            currentIndex = index;
-          });
+          ref.read(navIndexProvider.notifier).setIndex(index);
         },
         destinations: const [
-          NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
+          NavigationDestination(icon: Icon(Icons.home), label: 'Trans'),
           NavigationDestination(
             icon: Icon(Icons.receipt_long_outlined),
-            label: 'History',
+            label: 'Stats',
           ),
-          NavigationDestination(
-            icon: Icon(Icons.pie_chart),
-            label: 'Statistics',
-          ),
+          NavigationDestination(icon: Icon(Icons.pie_chart), label: 'Accounts'),
+          NavigationDestination(icon: Icon(Icons.settings), label: 'Settings'),
         ],
       ),
     );

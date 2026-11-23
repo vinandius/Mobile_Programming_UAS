@@ -4,6 +4,21 @@ import '../database/db_helper.dart';
 import '../models/transaction.dart';
 import 'auth_provider.dart';
 
+typedef Summary = ({int income, int expense, int balance});
+
+Summary summarize(Iterable<Transaction> list) {
+  var income = 0;
+  var expense = 0;
+  for (final l in list) {
+    if (l.type == 'income') {
+      income = income + l.nominal;
+    } else if (l.type == 'expense') {
+      expense = expense - l.nominal;
+    }
+  }
+  return (income: income, expense: expense, balance: income - expense);
+}
+
 class TransactionNotifier extends AsyncNotifier<List<Transaction>> {
   @override
   Future<List<Transaction>> build() async {

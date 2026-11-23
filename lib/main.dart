@@ -1,7 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_manager/pages/settings_page.dart';
+import 'package:money_manager/pages/trans_page.dart';
+import 'package:money_manager/pages/stats_page.dart';
+import 'package:money_manager/pages/accounts_page.dart';
+import 'package:money_manager/pages/login.dart';
+import 'package:money_manager/models/user.dart';
+import 'package:money_manager/pages/account.dart';
+import 'package:money_manager/providers/auth_provider.dart';
+
+import './providers/nav_provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -11,63 +22,53 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: 'Money Manager',
       theme: ThemeData(
         colorScheme: .fromSeed(seedColor: const Color(0xFF00897B)),
       ),
-      home: const MyHomePage(title: 'Money Manager'),
+      home: const LoginPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
+class MyHomePage extends ConsumerStatefulWidget {
+  const MyHomePage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  ConsumerState<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int currentIndex = 0;
-
+class _MyHomePageState extends ConsumerState<MyHomePage> {
   final List<Widget> halaman = const [
-    Center(child: Text('Home')),
-    Center(child: Text('History')),
-    Center(child: Text('Statistics')),
+    TransPage(),
+    StatsPage(),
+    AccountsPage(),
+    SettingsPage(),
   ];
+
+  static const List<String> _judul = ['Trans', 'Stats', 'Accounts', 'Settings'];
 
   @override
   Widget build(BuildContext context) {
+    final currentIndex = ref.watch(navIndexProvider);
+
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFF00897B),
-        title: Text(widget.title),
-      ),
       backgroundColor: Color(0xFFF5F7F8),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: .start,
-          children: [const Text('test')],
-        ),
-      ),
+      body: halaman[currentIndex],
       bottomNavigationBar: NavigationBar(
         selectedIndex: currentIndex,
         onDestinationSelected: (index) {
-          setState(() {
-            currentIndex = index;
-          });
+          ref.read(navIndexProvider.notifier).setIndex(index);
         },
         destinations: const [
-          NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
+          NavigationDestination(icon: Icon(Icons.home), label: 'Trans'),
           NavigationDestination(
             icon: Icon(Icons.receipt_long_outlined),
-            label: 'History',
+            label: 'Stats',
           ),
-          NavigationDestination(
-            icon: Icon(Icons.pie_chart),
-            label: 'Statistics',
-          ),
+          NavigationDestination(icon: Icon(Icons.pie_chart), label: 'Accounts'),
+          NavigationDestination(icon: Icon(Icons.settings), label: 'Settings'),
         ],
       ),
     );

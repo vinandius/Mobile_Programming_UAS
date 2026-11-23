@@ -7,20 +7,24 @@ class CategoryItem {
 }
 
 const expenseCategories = [
-  CategoryItem('Food', Icons.restaurant),
+  CategoryItem('Food', Icons.food_bank),
+  CategoryItem('Social Life', Icons.social_distance),
+  CategoryItem('Pets', Icons.pets),
   CategoryItem('Transport', Icons.directions_bus),
-  CategoryItem('Shopping', Icons.shopping_bag),
-  CategoryItem('Bills', Icons.receipt_long),
-  CategoryItem('Health', Icons.local_hospital),
-  CategoryItem('Entertainment', Icons.movie),
+  CategoryItem('Culture', Icons.image),
+  CategoryItem('Household', Icons.chair),
+  CategoryItem('Apparel', Icons.checkroom),
+  CategoryItem('Beauty', Icons.face),
+  CategoryItem('Health', Icons.health_and_safety),
   CategoryItem('Education', Icons.school),
+  CategoryItem('Gift', Icons.card_giftcard_sharp),
   CategoryItem('Other', Icons.more_horiz),
 ];
 
 const incomeCategories = [
-  CategoryItem('Salary', Icons.payments),
   CategoryItem('Allowance', Icons.account_balance_wallet),
+  CategoryItem('Salary', Icons.payments),
+  CategoryItem('Petty Cash', Icons.money),
   CategoryItem('Bonus', Icons.card_giftcard),
-  CategoryItem('Investment', Icons.trending_up),
   CategoryItem('Other', Icons.more_horiz),
 ];

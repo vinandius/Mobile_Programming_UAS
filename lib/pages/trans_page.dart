@@ -5,8 +5,6 @@ import 'package:tbldatepicker/tbldatepicker.dart';
 
 import '../providers/transaction_provider.dart';
 
-import '../widgets/summary_card.dart';
-
 class TransPage extends ConsumerWidget {
   const TransPage({super.key});
 
@@ -15,13 +13,19 @@ class TransPage extends ConsumerWidget {
     final transactions = ref.watch(transactionProvider);
 
     return Scaffold(
-      appBar: AppBar(),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Column(children: [const SummaryCard()]),
+      appBar: AppBar(
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(onPressed: () {}, icon: const Icon(Icons.chevron_left)),
+            Text('Nov 2026'),
+            IconButton(onPressed: () {}, icon: const Icon(Icons.chevron_left)),
+          ],
         ),
+  
       ),
+      body: SafeArea(
+        child: ),
     );
   }
 }

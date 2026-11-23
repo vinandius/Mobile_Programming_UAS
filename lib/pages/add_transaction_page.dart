@@ -7,7 +7,6 @@ import '../models/transaction.dart';
 import '../providers/auth_provider.dart';
 import '../providers/transaction_provider.dart';
 
-import '../models/category.dart';
 import '../widgets/category_grid.dart';
 
 class AddTransactionPage extends ConsumerStatefulWidget {
@@ -59,13 +58,17 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
     final title = _titleCtrl.text.trim();
     final nominal = int.tryParse(_nominalCtrl.text.trim());
 
+    if (_type == 'transfer') {
+      setState(() => _error = 'No Accounts made.');
+    }
+
     if (title.isEmpty) {
-      setState(() => _error = 'Judul masih kosong');
+      setState(() => _error = 'Title can not be empty!');
       return;
     }
 
     if (nominal == null || nominal <= 0) {
-      setState(() => _error = 'Nominal masih kosong, harus lebih dari 0');
+      setState(() => _error = 'Nominal must be more than 0!');
       return;
     }
 

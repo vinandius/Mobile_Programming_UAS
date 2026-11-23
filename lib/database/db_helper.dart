@@ -15,6 +15,7 @@ class DbHelper {
 
   static Future<Database>? _opening;
 
+  static const defaultAccounts = ['Cash', 'Account', 'Card'];
   Future<Database> get database => _opening ??= _initDb();
 
   Future<Database> _initDb() async {
@@ -42,6 +43,11 @@ class DbHelper {
           password TEXT NOT NULL
         )
       ''');
+
+      db.execute('''
+        CREATE TABLE accounts (
+        )
+      )''');
 
       db.execute('''
         CREATE TABLE transactions (
@@ -73,6 +79,15 @@ class DbHelper {
         email,
         _hash(password),
       ]);
+
+      final userId = db.lastInsertRowId;
+
+      for (final acc in ['Cash', 'Account', 'Card']) {
+        db.execute(
+          'INSERT INTO accounts(user_id, name, initial_balance) VALUES (?, ?, 0)',
+          [userId, acc],
+        );
+      }
       return true;
     } on SqliteException {
       return false;

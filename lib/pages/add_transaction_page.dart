@@ -8,9 +8,12 @@ import '../providers/auth_provider.dart';
 import '../providers/transaction_provider.dart';
 
 import '../widgets/category_grid.dart';
+import '../models/accounts.dart';
 
 class AddTransactionPage extends ConsumerStatefulWidget {
-  const AddTransactionPage({super.key});
+  final Transaction? existing;
+
+  const AddTransactionPage({super.key, this.existing});
 
   @override
   ConsumerState<AddTransactionPage> createState() => _AddTransactionPageState();
@@ -24,8 +27,26 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
   String _type = 'expense';
   String _category = 'Food';
   DateTime _date = DateTime.now();
+  int? _accountId;
+  int? _toAccountId;
   bool _saving = false;
   String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    final e = widget.existing;
+    if (e != null) {
+      _type = e.type;
+      _titleCtrl.text = e.title;
+      _nominalCtrl.text = e.nominal.toString();
+      _noteCtrl.text = e.note ?? '';
+      _category = e.category;
+      _date = e.date;
+      _accountId = e.accountId;
+      _toAccountId = e.toAccountId;
+    }
+  }
 
   String get _title => switch (_type) {
     'income' => 'income',
@@ -78,19 +99,17 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
     });
 
     final user = ref.read(currentUserProvider)!;
+    final note = _noteCtrl.text.trim();
 
-    await ref
-        .read(transactionProvider.notifier)
-        .add(
-          Transaction(
-            userId: user.id!,
-            title: title,
-            nominal: nominal,
-            type: _type,
-            category: _category,
-            date: _date,
-          ),
-        );
+    final t = Transaction(
+      id: widget.existing?.id,
+      userId: user.id!,
+      title: title.isEmpty ? 'Transfer' : title,
+      nominal: nominal,
+      type: _type,
+      date: _date,
+      note: note.isEmpty ? null : note,
+    );
 
     if (!mounted) return;
     Navigator.pop(context);

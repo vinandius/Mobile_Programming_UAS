@@ -22,10 +22,8 @@ class TransPage extends ConsumerWidget {
             IconButton(onPressed: () {}, icon: const Icon(Icons.chevron_left)),
           ],
         ),
-  
       ),
-      body: SafeArea(
-        child: ),
+      body: SafeArea(),
     );
   }
 }

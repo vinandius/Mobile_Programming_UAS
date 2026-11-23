@@ -9,6 +9,7 @@ import '../providers/transaction_provider.dart';
 
 import '../widgets/category_grid.dart';
 import '../models/accounts.dart';
+import '../providers/account_provider.dart';
 
 class AddTransactionPage extends ConsumerStatefulWidget {
   final Transaction? existing;
@@ -57,6 +58,13 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
   List<CategoryItem> get _currentCategories =>
       _type == 'income' ? incomeCategories : expenseCategories;
 
+  int? _defaultTo(List<Accounts> accounts, int? fromId) {
+    for (final a in accounts) {
+      if (a.id != fromId) return a.id;
+    }
+    return null;
+  }
+
   @override
   void dispose() {
     _titleCtrl.dispose();
@@ -76,14 +84,28 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
   }
 
   Future<void> _save() async {
+    final accounts = ref.read(accountProvider).value ?? [];
+    final isTransfer = _type == 'transfer';
+
+    final fromId =
+        _accountId ?? (accounts.isNotEmpty ? accounts.first.id : null);
+    final toId = isTransfer
+        ? (_toAccountId ?? _defaultTo(accounts, fromId))
+        : null;
+
     final title = _titleCtrl.text.trim();
     final nominal = int.tryParse(_nominalCtrl.text.trim());
+
+    if (fromId == null) {
+      setState(() => _error = 'Account is not available');
+      return;
+    }
 
     if (_type == 'transfer') {
       setState(() => _error = 'No Accounts made.');
     }
 
-    if (title.isEmpty) {
+    if (!isTransfer && title.isEmpty) {
       setState(() => _error = 'Title can not be empty!');
       return;
     }
@@ -91,6 +113,13 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
     if (nominal == null || nominal <= 0) {
       setState(() => _error = 'Nominal must be more than 0!');
       return;
+    }
+
+    if (isTransfer && (toId == null || toId == fromId)) {
+      setState(
+        () => _error =
+            'Account origin and account destination can not be the same!',
+      );
     }
 
     setState(() {
@@ -107,9 +136,19 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
       title: title.isEmpty ? 'Transfer' : title,
       nominal: nominal,
       type: _type,
+      category: isTransfer ? 'Transfer' : _category,
       date: _date,
+      accountId: fromId,
+      toAccountId: toId,
       note: note.isEmpty ? null : note,
     );
+
+    final notifier = ref.read(transactionProvider.notifier);
+    if (widget.existing == null) {
+      await notifier.add(t);
+    } else {
+      await notifier.edit(t);
+    }
 
     if (!mounted) return;
     Navigator.pop(context);
@@ -143,7 +182,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
               TextField(
                 controller: _titleCtrl,
                 decoration: const InputDecoration(
-                  labelText: 'Judul',
+                  labelText: 'Title',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -200,7 +239,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                           width: 20,
                           child: CircularProgressIndicator(strokeWidth: 1),
                         )
-                      : const Text('Save'),
+                      : Text(widget.existing == null ? 'Save' : 'Save edits'),
                 ),
               ),
             ],

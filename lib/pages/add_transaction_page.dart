@@ -144,6 +144,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
     );
 
     final notifier = ref.read(transactionProvider.notifier);
+
     if (widget.existing == null) {
       await notifier.add(t);
     } else {

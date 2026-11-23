@@ -8,6 +8,7 @@ import 'package:sqlite3/sqlite3.dart';
 
 import '../models/transaction.dart';
 import '../models/user.dart';
+import '../models/accounts.dart';
 
 class DbHelper {
   DbHelper._();
@@ -15,6 +16,7 @@ class DbHelper {
 
   static Future<Database>? _opening;
 
+  static const defaultAccounts = ['Cash', 'Account', 'Card'];
   Future<Database> get database => _opening ??= _initDb();
 
   Future<Database> _initDb() async {
@@ -42,6 +44,16 @@ class DbHelper {
           password TEXT NOT NULL
         )
       ''');
+
+      db.execute('''
+        CREATE TABLE accounts (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER NOT NULL,
+          name TEXT NOT NULL,
+          initial_balance NOT NULL DEFAULT 0,
+          FOREIGN KEY (user_id) REFERENCES users (id)
+        )
+      )''');
 
       db.execute('''
         CREATE TABLE transactions (
@@ -73,8 +85,19 @@ class DbHelper {
         email,
         _hash(password),
       ]);
+
+      final userId = db.lastInsertRowId;
+
+      for (final acc in ['Cash', 'Account', 'Card']) {
+        db.execute(
+          'INSERT INTO accounts(user_id, name, initial_balance) VALUES (?, ?, 0)',
+          [userId, acc],
+        );
+      }
+      db.execute('COMMIT');
       return true;
     } on SqliteException {
+      db.execute('ROLLBACK');
       return false;
     }
   }
@@ -106,6 +129,31 @@ class DbHelper {
         t.date.toIso8601String(),
         t.note,
       ],
+    );
+  }
+
+  Future<List<Accounts>> getAccounts(int userId) async {
+    final db = await database;
+    final result = db.select(
+      'SELECT * FROM accounts WHERE user_id = ? ORDER BY id',
+      [userId],
+    );
+    return result.map((row) => Accounts.fromMap(row)).toList();
+  }
+
+  Future<void> addAccount(Accounts a) async {
+    final db = await database;
+    db.execute(
+      'INSERT INTO account (user_id, name, initial_balance) VALUES (?, ?, ?)',
+      [a.userId, a.name, a.initialBalance],
+    );
+  }
+
+  Future<void> editAccount(Accounts a) async {
+    final db = await database;
+    db.execute(
+      'UPDATE accounts SET name = ?, initial_balance = ? WHERE id = ?',
+      [a.name, a.initialBalance, a.id],
     );
   }
 

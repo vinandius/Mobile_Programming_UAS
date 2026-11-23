@@ -7,6 +7,8 @@ class Transaction {
   final String category;
   final DateTime date;
   final String? note;
+  final int accountId;
+  final int? toAccountId;
 
   Transaction({
     this.id,
@@ -16,6 +18,8 @@ class Transaction {
     required this.type,
     required this.category,
     required this.date,
+    required this.accountId,
+    this.toAccountId,
     this.note,
   });
 
@@ -28,6 +32,8 @@ class Transaction {
       'type': type,
       'category': category,
       'date': date.toIso8601String(),
+      'account_id': accountId,
+      'to_account_id': toAccountId,
       'note': note,
     };
   }
@@ -41,6 +47,8 @@ class Transaction {
       type: map['type'] as String,
       category: map['category'] as String,
       date: map['date'] as DateTime,
+      accountId: map['account_id'] as int,
+      toAccountId: map['to_account_id'] as int?,
       note: map['note'] as String?,
     );
   }

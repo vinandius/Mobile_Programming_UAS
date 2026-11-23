@@ -8,6 +8,7 @@ import 'package:sqlite3/sqlite3.dart';
 
 import '../models/transaction.dart';
 import '../models/user.dart';
+import '../models/accounts.dart';
 
 class DbHelper {
   DbHelper._();
@@ -128,6 +129,31 @@ class DbHelper {
         t.date.toIso8601String(),
         t.note,
       ],
+    );
+  }
+
+  Future<List<Accounts>> getAccounts(int userId) async {
+    final db = await database;
+    final result = db.select(
+      'SELECT * FROM accounts WHERE user_id = ? ORDER BY id',
+      [userId],
+    );
+    return result.map((row) => Accounts.fromMap(row)).toList();
+  }
+
+  Future<void> addAccount(Accounts a) async {
+    final db = await database;
+    db.execute(
+      'INSERT INTO account (user_id, name, initial_balance) VALUES (?, ?, ?)',
+      [a.userId, a.name, a.initialBalance],
+    );
+  }
+
+  Future<void> editAccount(Accounts a) async {
+    final db = await database;
+    db.execute(
+      'UPDATE accounts SET name = ?, initial_balance = ? WHERE id = ?',
+      [a.name, a.initialBalance, a.id],
     );
   }
 

@@ -31,3 +31,14 @@ String formatRupiah(int value) {
   }
   return '${negative ? "-" : ''}Rp$buf';
 }
+
+String formatCompact(int value) {
+  if (value >= 1000000) {
+    final m = value / 1000000;
+    return '${m.toStringAsFixed(m % 1 == 0 ? 0 : 1)}M';
+  }
+  if (value >= 1000) {
+    return '${(value / 1000).round()}K';
+  }
+  return '$value';
+}

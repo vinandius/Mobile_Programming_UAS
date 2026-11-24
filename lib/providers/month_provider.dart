@@ -12,6 +12,7 @@ class SelectedMonthNotifier extends Notifier<DateTime> {
 
   void previous() => state = DateTime(state.year, state.month - 1);
   void next() => state = DateTime(state.year, state.month + 1);
+  void setMonth(DateTime month) => state = DateTime(month.year, month.month);
 }
 
 final selectedMonthProvider = NotifierProvider<SelectedMonthNotifier, DateTime>(

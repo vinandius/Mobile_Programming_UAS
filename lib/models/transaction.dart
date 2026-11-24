@@ -32,24 +32,24 @@ class Transaction {
       'type': type,
       'category': category,
       'date': date.toIso8601String(),
+      'note': note,
       'account_id': accountId,
       'to_account_id': toAccountId,
-      'note': note,
     };
   }
 
   factory Transaction.fromMap(Map<String, dynamic> map) {
     return Transaction(
       id: map['id'] as int?,
-      userId: map['userId'] as int,
+      userId: map['user_id'] as int,
       title: map['title'] as String,
       nominal: map['nominal'] as int,
       type: map['type'] as String,
       category: map['category'] as String,
-      date: map['date'] as DateTime,
+      date: DateTime.parse(map['date'] as String),
+      note: map['note'] as String?,
       accountId: map['account_id'] as int,
       toAccountId: map['to_account_id'] as int?,
-      note: map['note'] as String?,
     );
   }
 }

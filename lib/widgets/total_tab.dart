@@ -13,8 +13,7 @@ class TotalTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final txs = ref.watch(monthlyTransactionsProvider).value ?? [];
     final accounts = ref.watch(accountProvider).value ?? [];
-    final balances = ref.watch(accountBalancesProvider);
-    final totalBalance = balances.values.fold<int>(0, (a, b) => a + b);
+    final totalBalance = summarize(txs).balance;
 
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -29,7 +28,7 @@ class TotalTab extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Total saldo semua akun',
+                'Your balance in total',
                 style: TextStyle(color: Colors.white70),
               ),
               const SizedBox(height: 4),
@@ -46,7 +45,7 @@ class TotalTab extends ConsumerWidget {
         ),
         const SizedBox(height: 16),
         const Text(
-          'Per akun (bulan ini)',
+          'Balance usage per account',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
@@ -69,7 +68,7 @@ class TotalTab extends ConsumerWidget {
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           const Spacer(),
-                          Text('Saldo ${formatRupiah(balances[a.id] ?? 0)}'),
+                          Text('Balance ${formatRupiah(s.balance)}'),
                         ],
                       ),
                       const SizedBox(height: 6),

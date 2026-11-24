@@ -47,8 +47,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     SettingsPage(),
   ];
 
-  static const List<String> _judul = ['Trans', 'Stats', 'Accounts', 'Settings'];
-
   @override
   Widget build(BuildContext context) {
     final currentIndex = ref.watch(navIndexProvider);
@@ -62,12 +60,15 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
           ref.read(navIndexProvider.notifier).setIndex(index);
         },
         destinations: const [
-          NavigationDestination(icon: Icon(Icons.home), label: 'Trans'),
           NavigationDestination(
-            icon: Icon(Icons.receipt_long_outlined),
-            label: 'Stats',
+            icon: Icon(Icons.book_outlined),
+            label: 'Trans',
           ),
-          NavigationDestination(icon: Icon(Icons.pie_chart), label: 'Accounts'),
+          NavigationDestination(icon: Icon(Icons.pie_chart), label: 'Stats'),
+          NavigationDestination(
+            icon: Icon(Icons.monetization_on_outlined),
+            label: 'Accounts',
+          ),
           NavigationDestination(icon: Icon(Icons.settings), label: 'Settings'),
         ],
       ),

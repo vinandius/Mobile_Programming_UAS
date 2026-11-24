@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 const incomeColor = Color(0xFF43A047);
 const expenseColor = Color(0xFFE53935);
@@ -21,15 +22,9 @@ const monthsName = [
 
 const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-String formatRupiah(int value) {
-  final negative = value < 0;
-  final digits = value.abs().toString();
-  final buf = StringBuffer();
-  for (var i = 0; i < digits.length; i++) {
-    if (i > 0 && (digits.length - 1) % 3 == 0) buf.write(".");
-    buf.write(digits[i]);
-  }
-  return '${negative ? "-" : ''}Rp$buf';
+String formatRupiah(int number) {
+  NumberFormat rupiah = NumberFormat.currency(locale: 'id', symbol: 'Rp');
+  return rupiah.format(number);
 }
 
 String formatCompact(int value) {

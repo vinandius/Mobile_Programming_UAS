@@ -24,8 +24,8 @@ class TransPage extends ConsumerWidget {
         appBar: AppBar(
           title: const MonthSelector(),
           bottom: const TabBar(
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.white70,
+            labelColor: Colors.black,
+            unselectedLabelColor: Colors.grey,
             indicatorColor: Colors.white,
             tabs: [
               Tab(text: 'Daily'),

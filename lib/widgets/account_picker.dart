@@ -18,22 +18,25 @@ class AccountPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          children: accounts.map((a) {
-            return ChoiceChip(
-              label: Text(a.name),
-              selected: a.id == selectedId,
-              onSelected: (_) => onSelected(a.id!),
-            );
-          }).toList(),
-        ),
-      ],
+    return SizedBox(
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            children: accounts.map((a) {
+              return ChoiceChip(
+                label: Text(a.name),
+                selected: a.id == selectedId,
+                onSelected: (_) => onSelected(a.id!),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
     );
   }
 }

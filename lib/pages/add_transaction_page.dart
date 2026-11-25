@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:money_manager/models/category.dart';
 
+import '../models/accounts.dart';
+import '../models/category.dart';
 import '../models/transaction.dart';
+import '../providers/account_provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/transaction_provider.dart';
-
+import '../widgets/account_picker.dart';
 import '../widgets/category_grid.dart';
-import '../models/accounts.dart';
-import '../providers/account_provider.dart';
 
 class AddTransactionPage extends ConsumerStatefulWidget {
   final Transaction? existing;
@@ -50,14 +50,15 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
   }
 
   String get _title => switch (_type) {
-    'income' => 'income',
-    'transfer' => 'transfer',
-    _ => 'expense',
+    'income' => 'Income',
+    'transfer' => 'Transfer',
+    _ => 'Expense',
   };
 
   List<CategoryItem> get _currentCategories =>
       _type == 'income' ? incomeCategories : expenseCategories;
 
+  // akun pertama yang berbeda dari akun asal
   int? _defaultTo(List<Accounts> accounts, int? fromId) {
     for (final a in accounts) {
       if (a.id != fromId) return a.id;
@@ -74,13 +75,13 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
   }
 
   Future<void> _pickDate() async {
-    final pickedDate = await showDatePicker(
+    final picked = await showDatePicker(
       context: context,
       initialDate: _date,
       firstDate: DateTime(2020),
       lastDate: DateTime(2100),
     );
-    if (pickedDate != null) setState(() => _date = pickedDate);
+    if (picked != null) setState(() => _date = picked);
   }
 
   Future<void> _save() async {
@@ -97,29 +98,20 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
     final nominal = int.tryParse(_nominalCtrl.text.trim());
 
     if (fromId == null) {
-      setState(() => _error = 'Account is not available');
+      setState(() => _error = 'No Account found!');
       return;
     }
-
-    if (_type == 'transfer') {
-      setState(() => _error = 'No Accounts made.');
-    }
-
     if (!isTransfer && title.isEmpty) {
       setState(() => _error = 'Title can not be empty!');
       return;
     }
-
     if (nominal == null || nominal <= 0) {
-      setState(() => _error = 'Nominal must be more than 0!');
+      setState(() => _error = 'Nominal have to be more than 0!');
       return;
     }
-
     if (isTransfer && (toId == null || toId == fromId)) {
-      setState(
-        () => _error =
-            'Account origin and account destination can not be the same!',
-      );
+      setState(() => _error = 'Account can not be same!');
+      return;
     }
 
     setState(() {
@@ -138,13 +130,12 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
       type: _type,
       category: isTransfer ? 'Transfer' : _category,
       date: _date,
+      note: note.isEmpty ? null : note,
       accountId: fromId,
       toAccountId: toId,
-      note: note.isEmpty ? null : note,
     );
 
     final notifier = ref.read(transactionProvider.notifier);
-
     if (widget.existing == null) {
       await notifier.add(t);
     } else {
@@ -157,15 +148,23 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(_title)),
+    final accounts = ref.watch(accountProvider).value ?? [];
+    final isTransfer = _type == 'transfer';
 
+    final fromId =
+        _accountId ?? (accounts.isNotEmpty ? accounts.first.id : null);
+    final toId = _toAccountId ?? _defaultTo(accounts, fromId);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.existing == null ? _title : 'Edit $_title'),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(15),
           child: Column(
             children: [
-              SegmentedButton(
+              SegmentedButton<String>(
                 segments: const [
                   ButtonSegment(value: 'income', label: Text('Income')),
                   ButtonSegment(value: 'expense', label: Text('Expense')),
@@ -179,12 +178,23 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                   }
                 }),
               ),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  icon: const Icon(Icons.calendar_today),
+                  label: Text('${_date.day}/${_date.month}/${_date.year}'),
+                  onPressed: _pickDate,
+                  style: OutlinedButton.styleFrom(
+                    alignment: Alignment.centerLeft,
+                  ),
+                ),
+              ),
               const SizedBox(height: 15),
               TextField(
                 controller: _titleCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Title',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: isTransfer ? 'Title (optional)' : 'Title',
+                  border: const UnderlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 15),
@@ -195,39 +205,57 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                 decoration: const InputDecoration(
                   labelText: 'Nominal',
                   prefixText: 'Rp ',
-                  border: OutlineInputBorder(),
+                  border: UnderlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 15),
-              if (_type != 'transfer') ...[
+              if (isTransfer) ...[
+                AccountPicker(
+                  label: 'From',
+                  accounts: accounts,
+                  selectedId: fromId,
+                  onSelected: (id) => setState(() => _accountId = id),
+                ),
+                const SizedBox(height: 15),
+                AccountPicker(
+                  label: 'To',
+                  accounts: accounts,
+                  selectedId: toId,
+                  onSelected: (id) => setState(() => _toAccountId = id),
+                ),
+              ] else ...[
+                AccountPicker(
+                  label: 'Account',
+                  accounts: accounts,
+                  selectedId: fromId,
+                  onSelected: (id) => setState(() => _accountId = id),
+                ),
+                const SizedBox(height: 15),
                 const Align(
                   alignment: Alignment.centerLeft,
-                  child: Text('Category'),
+                  child: Text(
+                    'Category',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
                 CategoryGrid(
                   items: _currentCategories,
                   selected: _category,
                   onSelected: (name) => setState(() => _category = name),
                 ),
-                const SizedBox(height: 15),
               ],
-              OutlinedButton.icon(
-                onPressed: _pickDate,
-                icon: Icon(Icons.calendar_today),
-                label: Text('${_date.day}/${_date.month}/${_date.year}'),
-              ),
               const SizedBox(height: 15),
               TextField(
                 controller: _noteCtrl,
-                decoration: InputDecoration(
-                  labelText: 'Note (Optional)',
-                  border: OutlineInputBorder(),
+                decoration: const InputDecoration(
+                  labelText: 'Note (optional)',
+                  border: UnderlineInputBorder(),
                 ),
               ),
               if (_error != null) ...[
-                SizedBox(height: 12),
-                Text(_error!, style: TextStyle(color: Colors.red)),
+                const SizedBox(height: 12),
+                Text(_error!, style: const TextStyle(color: Colors.red)),
               ],
               const SizedBox(height: 24),
               SizedBox(
@@ -235,12 +263,12 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                 child: FilledButton(
                   onPressed: _saving ? null : _save,
                   child: _saving
-                      ? SizedBox(
+                      ? const SizedBox(
                           height: 20,
                           width: 20,
-                          child: CircularProgressIndicator(strokeWidth: 1),
+                          child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : Text(widget.existing == null ? 'Save' : 'Save edits'),
+                      : Text(widget.existing == null ? 'Save' : 'Save changes'),
                 ),
               ),
             ],

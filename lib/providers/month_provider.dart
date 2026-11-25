@@ -12,6 +12,7 @@ class SelectedMonthNotifier extends Notifier<DateTime> {
 
   void previous() => state = DateTime(state.year, state.month - 1);
   void next() => state = DateTime(state.year, state.month + 1);
+  void setMonth(DateTime month) => state = DateTime(month.year, month.month);
 }
 
 final selectedMonthProvider = NotifierProvider<SelectedMonthNotifier, DateTime>(
@@ -34,6 +35,15 @@ final monthlyTransactionsProvider = Provider<AsyncValue<List<Transaction>>>((
 final monthlySummaryProvider = Provider<Summary>(((ref) {
   return summarize(ref.watch(monthlyTransactionsProvider).value ?? []);
 }));
+
+final yearlySummaryProvider = Provider<List<Summary>>((ref) {
+  final all = ref.watch(transactionProvider).value ?? [];
+  final year = ref.watch(selectedMonthProvider).year;
+  return [
+    for (var m = 1; m <= 12; m++)
+      summarize(all.where((t) => t.date.year == year && t.date.month == m)),
+  ];
+});
 
 class DayGroup {
   final DateTime day;

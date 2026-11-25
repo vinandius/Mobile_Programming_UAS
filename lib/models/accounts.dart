@@ -25,7 +25,7 @@ class Accounts {
       id: map['id'] as int?,
       userId: map['user_id'] as int,
       name: map['name'] as String,
-      initialBalance: map['initialBalance'] as int,
+      initialBalance: map['initial_balance'] as int,
     );
   }
 }

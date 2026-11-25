@@ -11,13 +11,13 @@ class SummaryRow extends StatelessWidget {
     return Expanded(
       child: Column(
         children: [
-          Text(label, style: TextStyle(fontSize: 12, color: Colors.grey)),
+          Text(label, style: TextStyle(fontSize: 12, color: Colors.black)),
           SizedBox(height: 4),
           Text(
             formatRupiah(value),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: color, fontWeight: FontWeight.bold),
+            style: TextStyle(color: color),
           ),
         ],
       ),

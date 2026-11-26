@@ -6,6 +6,7 @@ import '../providers/stats_provider.dart';
 import '../utils/category_stats.dart';
 import '../utils/helpers.dart';
 import '../widgets/period_selector.dart';
+import '../widgets/piechart_label.dart';
 
 class StatsPage extends ConsumerStatefulWidget {
   const StatsPage({super.key});
@@ -96,56 +97,17 @@ class _StatsPageState extends ConsumerState<StatsPage> {
                 : ListView(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                     children: [
-                      SizedBox(
-                        height: 240,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            PieChart(
-                              PieChartData(
-                                sectionsSpace: 2,
-                                centerSpaceRadius: 70,
-                                sections: [
-                                  for (final s in stats)
-                                    PieChartSectionData(
-                                      value: s.total.toDouble(),
-                                      color: colorForCategory(s.category),
-                                      radius: 40,
-                                      showTitle: s.percent >= 6,
-                                      title: '${s.percent.round()}%',
-                                      titleStyle: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              width: 120,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    isIncome ? 'Income' : 'Expense',
-                                    style: TextStyle(color: Colors.grey),
-                                  ),
-                                  FittedBox(
-                                    child: Text(
-                                      formatRupiah(total),
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                      Center(
+                        child: Text(
+                          '${isIncome ? 'Income' : 'Expense'}  ${formatRupiah(total)}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
+                      const SizedBox(height: 12),
+                      PiechartLabel(stats: stats),
                       const SizedBox(height: 8),
                       Container(
                         padding: EdgeInsets.all(12),

@@ -25,7 +25,7 @@ class StatsmodeSelector extends StatelessWidget {
       margin: EdgeInsets.only(right: 12),
       padding: EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
+        border: Border.all(color: Colors.black),
         borderRadius: BorderRadius.circular(8),
       ),
       child: DropdownButtonHideUnderline(
@@ -39,7 +39,7 @@ class StatsmodeSelector extends StatelessWidget {
           selectedItemBuilder: (context) => [
             for (final m in StatsMode.values)
               Center(
-                child: Text(_labels[m]!, style: TextStyle(color: Colors.white)),
+                child: Text(_labels[m]!, style: TextStyle(color: Colors.black)),
               ),
           ],
           items: [

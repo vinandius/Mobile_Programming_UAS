@@ -6,6 +6,7 @@ import '../utils/category_stats.dart';
 import '../utils/helpers.dart';
 import '../widgets/period_selector.dart';
 import '../widgets/piechart_label.dart';
+import '../widgets/statsmode_selector.dart';
 
 class StatsPage extends ConsumerStatefulWidget {
   const StatsPage({super.key});
@@ -56,26 +57,14 @@ class _StatsPageState extends ConsumerState<StatsPage> {
     final period = ref.watch(statsPeriodProvider);
 
     return Scaffold(
-      appBar: AppBar(title: PeriodSelector(onPickRange: _pickRange)),
+      appBar: AppBar(
+        title: PeriodSelector(onPickRange: _pickRange),
+        actions: [
+          StatsmodeSelector(value: period.mode, onChanged: _selectMode),
+        ],
+      ),
       body: Column(
         children: [
-          Padding(
-            padding: EdgeInsets.fromLTRB(16, 12, 16, 0),
-            child: SizedBox(
-              width: double.infinity,
-              child: Wrap(
-                spacing: 8,
-                children: [
-                  for (final m in StatsMode.values)
-                    ChoiceChip(
-                      label: Text(_modeLabels[m]!),
-                      selected: period.mode == m,
-                      onSelected: (_) => _selectMode(m),
-                    ),
-                ],
-              ),
-            ),
-          ),
           Padding(
             padding: const EdgeInsets.all(16),
             child: SizedBox(

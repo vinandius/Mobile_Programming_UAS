@@ -1,52 +1,33 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/accounts.dart';
 import '../providers/account_provider.dart';
-import '../providers/auth_provider.dart';
 import '../utils/helpers.dart';
-import '../pages/add_account_page.dart';
 import 'account_detail_page.dart';
+import 'add_account_page.dart';
 
 class AccountsPage extends ConsumerWidget {
   const AccountsPage({super.key});
 
-  static const List<String> accountCategories = [
-    'Cash',
-    'Accounts',
-    'Card',
-    'Debit Card',
-    'Savings',
-    'Top-Up/Prepaid',
-    'Investments',
-    'Overdrafts',
-    'Loan',
-    'Insurance',
-    'Other',
-  ];
+  static const _groups = ['Cash', 'Account', 'Card'];
 
-  Future<void> _openForm(
-    BuildContext context,
-    WidgetRef ref, {
-    Accounts? existing,
-  }) async {
-    final user = ref.read(currentUserProvider);
-    if (user == null) return;
-
-    final result = await showAccountDialog(
-      context,
-      userId: user.id!,
-      existing: existing,
-    );
-    if (result == null) return;
-
-    final notifier = ref.read(accountProvider.notifier);
-    if (existing == null) {
-      await notifier.add(result);
-    } else {
-      await notifier.edit(result);
+  IconData _iconFor(String group) {
+    switch (group) {
+      case 'Cash':
+        return Icons.payments_outlined;
+      case 'Card':
+        return Icons.credit_card;
+      default:
+        return Icons.account_balance_outlined;
     }
+  }
+
+  void _openForm(BuildContext context, {Accounts? existing}) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => AddAccountPage(existing: existing)),
+    );
   }
 
   Widget _cell(String label, int value, Color color) {
@@ -66,26 +47,19 @@ class AccountsPage extends ConsumerWidget {
     );
   }
 
-  Widget _parent(String categoryName, int totalCategoryBalance) {
+  Widget _groupHeader(String group, int total) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      color: Colors.grey,
+      color: Colors.grey.shade200,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          Text(group, style: const TextStyle(fontWeight: FontWeight.bold)),
+          const Spacer(),
           Text(
-            categoryName.toUpperCase(),
+            formatRupiah(total),
             style: TextStyle(
               fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey,
-            ),
-          ),
-          Text(
-            formatRupiah(totalCategoryBalance),
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: totalCategoryBalance < 0 ? expenseColor : Colors.grey,
+              color: total < 0 ? expenseColor : Colors.black54,
             ),
           ),
         ],
@@ -93,9 +67,15 @@ class AccountsPage extends ConsumerWidget {
     );
   }
 
-  Widget _tile(BuildContext context, WidgetRef ref, Accounts a, int balance) {
+  Widget _tile(BuildContext context, Accounts a, int balance) {
+    final primary = Theme.of(context).colorScheme.primary;
+
     return ListTile(
       tileColor: Colors.white,
+      leading: CircleAvatar(
+        backgroundColor: primary.withValues(alpha: 0.12),
+        child: Icon(_iconFor(a.group), color: primary),
+      ),
       title: Text(a.name),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
@@ -110,7 +90,7 @@ class AccountsPage extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.edit_outlined, size: 20),
             tooltip: 'Edit account',
-            onPressed: () => _openForm(context, ref, existing: a),
+            onPressed: () => _openForm(context, existing: a),
           ),
         ],
       ),
@@ -139,16 +119,16 @@ class AccountsPage extends ConsumerWidget {
         liabilities += b;
       }
     }
-    final total = assets + liabilities;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Accounts'),
+        centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
             tooltip: 'Add account',
-            onPressed: () => _openForm(context, ref),
+            onPressed: () => _openForm(context),
           ),
         ],
       ),
@@ -157,16 +137,68 @@ class AccountsPage extends ConsumerWidget {
         error: (e, _) => Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
-            child: Text('Process failed: $e'),
+            child: Text('Failed to load accounts: $e'),
           ),
         ),
         data: (accounts) {
-          final Map<String, List<Accounts>> groupedAccounts = {};
-          for (final a in accounts) {
-            final category = _getCategory(a);
-          }
+          // urutan group tetap; group tak dikenal (kalau ada) ditaruh di belakang
+          final groupNames = <String>{
+            ..._groups,
+            ...accounts.map((a) => a.group),
+          };
+
+          return Column(
+            children: [
+              Container(
+                color: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: IntrinsicHeight(
+                  child: Row(
+                    children: [
+                      _cell('Assets', assets, incomeColor),
+                      const VerticalDivider(width: 1),
+                      _cell('Liabilities', liabilities, expenseColor),
+                      const VerticalDivider(width: 1),
+                      _cell('Total', assets + liabilities, Colors.black87),
+                    ],
+                  ),
+                ),
+              ),
+              const Divider(height: 1),
+              Expanded(
+                child: accounts.isEmpty
+                    ? const Center(child: Text('No accounts yet'))
+                    : ListView(
+                        children: [
+                          for (final g in groupNames)
+                            ..._section(context, g, accounts, balances),
+                        ],
+                      ),
+              ),
+            ],
+          );
         },
       ),
     );
+  }
+
+  List<Widget> _section(
+    BuildContext context,
+    String group,
+    List<Accounts> accounts,
+    Map<int, int> balances,
+  ) {
+    final items = accounts.where((a) => a.group == group).toList();
+    if (items.isEmpty) return [];
+
+    final total = items.fold<int>(0, (s, a) => s + (balances[a.id] ?? 0));
+
+    return [
+      _groupHeader(group, total),
+      for (final a in items) ...[
+        _tile(context, a, balances[a.id] ?? 0),
+        const Divider(height: 1),
+      ],
+    ];
   }
 }

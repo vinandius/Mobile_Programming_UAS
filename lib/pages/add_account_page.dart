@@ -165,15 +165,14 @@ class _AddAccountPageState extends ConsumerState<AddAccountPage> {
                 ],
               ),
               const SizedBox(height: 16),
+              Text('Name'),
               TextField(
                 controller: _nameCtrl,
                 textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(labelText: 'Name'),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _amountCtrl,
-                // tanda minus diizinkan, untuk akun yang saldonya bisa negatif
                 keyboardType: const TextInputType.numberWithOptions(
                   signed: true,
                 ),

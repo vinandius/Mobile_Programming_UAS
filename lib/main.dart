@@ -5,9 +5,6 @@ import 'package:money_manager/pages/trans_page.dart';
 import 'package:money_manager/pages/stats_page.dart';
 import 'package:money_manager/pages/accounts_page.dart';
 import 'package:money_manager/pages/login.dart';
-import 'package:money_manager/models/user.dart';
-import 'package:money_manager/pages/account.dart';
-import 'package:money_manager/providers/auth_provider.dart';
 
 import './providers/nav_provider.dart';
 

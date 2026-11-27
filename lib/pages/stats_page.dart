@@ -18,13 +18,6 @@ class StatsPage extends ConsumerStatefulWidget {
 class _StatsPageState extends ConsumerState<StatsPage> {
   String _type = 'expense';
 
-  static const _modeLabels = {
-    StatsMode.weekly: 'Weekly',
-    StatsMode.monthly: 'Monthly',
-    StatsMode.annually: 'Annually',
-    StatsMode.period: 'Period',
-  };
-
   Future<void> _pickRange() async {
     final current = ref.read(statsPeriodProvider).range;
 

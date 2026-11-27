@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/accounts.dart';
 import '../providers/account_provider.dart';
+import '../utils/account_group.dart';
 import '../providers/auth_provider.dart';
 import '../providers/transaction_provider.dart';
 
@@ -37,6 +38,37 @@ class _AddAccountPageState extends ConsumerState<AddAccountPage> {
     _nameCtrl.dispose();
     _amountCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickGroup() async {
+    final picked = await showDialog<String>(
+      context: context,
+      builder: (ctx) => SimpleDialog(
+        title: Text('Group'),
+        children: [
+          for (final g in accountGroups)
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(ctx, g.name),
+              child: Row(
+                children: [
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      g.name,
+                      style: TextStyle(
+                        fontWeight: g.name == _group
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+    if (picked != null) setState(() => _group = picked);
   }
 
   Future<void> _save() async {
@@ -103,8 +135,7 @@ class _AddAccountPageState extends ConsumerState<AddAccountPage> {
         content: Text(
           count == 0
               ? 'This account has no transactions.'
-              : 'This account has $count transaction(s). '
-                    'They will be deleted too and cannot be restored.',
+              : 'This account has $count transaction(s).',
         ),
         actions: [
           TextButton(
@@ -148,42 +179,64 @@ class _AddAccountPageState extends ConsumerState<AddAccountPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Group',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
+              Row(
                 children: [
-                  for (final g in _groups)
-                    ChoiceChip(
-                      label: Text(g),
-                      selected: _group == g,
-                      onSelected: (_) => setState(() => _group = g),
+                  SizedBox(
+                    width: 60,
+                    child: Text('Group', style: TextStyle(fontSize: 16)),
+                  ),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: InkWell(
+                      onTap: _pickGroup,
+                      child: InputDecorator(
+                        decoration: InputDecoration(),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [Text(_group), Icon(Icons.arrow_drop_down)],
+                        ),
+                      ),
                     ),
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
-              Text('Name'),
-              TextField(
-                controller: _nameCtrl,
-                textCapitalization: TextCapitalization.words,
+              Row(
+                children: [
+                  SizedBox(
+                    width: 60,
+                    child: Text('Name', style: TextStyle(fontSize: 16)),
+                  ),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: TextField(
+                      controller: _nameCtrl,
+                      textCapitalization: TextCapitalization.words,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
-              TextField(
-                controller: _amountCtrl,
-                keyboardType: const TextInputType.numberWithOptions(
-                  signed: true,
-                ),
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'^-?\d*')),
+              Row(
+                children: [
+                  SizedBox(
+                    width: 60,
+                    child: Text('Amount', style: TextStyle(fontSize: 16)),
+                  ),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: TextField(
+                      controller: _amountCtrl,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        signed: true,
+                      ),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'^-?\d*')),
+                      ],
+                      decoration: const InputDecoration(prefixText: 'Rp '),
+                    ),
+                  ),
                 ],
-                decoration: const InputDecoration(
-                  labelText: 'Amount',
-                  hintText: '0',
-                  prefixText: 'Rp ',
-                ),
               ),
               if (_error != null) ...[
                 const SizedBox(height: 12),

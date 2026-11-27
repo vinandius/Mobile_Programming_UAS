@@ -18,7 +18,7 @@ class AccountDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final name = ref.watch(accountNamesProvider)[accountId] ?? 'Akun';
+    final name = ref.watch(accountNamesProvider)[accountId] ?? 'Account';
     final balance = ref.watch(accountBalancesProvider)[accountId] ?? 0;
     final all = ref.watch(transactionProvider).value ?? [];
     final month = ref.watch(selectedMonthProvider);
@@ -52,7 +52,7 @@ class AccountDetailPage extends ConsumerWidget {
               child: Column(
                 children: [
                   const Text(
-                    'Saldo',
+                    'Balance',
                     style: TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                   Text(

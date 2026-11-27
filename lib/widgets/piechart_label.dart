@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 
 import '../utils/category_stats.dart';
 
-/// Pie chart penuh dengan garis penunjuk tipis (berwarna sesuai irisan) ke luar,
-/// diikuti tulisan nama kategori dan persentasenya.
 class PiechartLabel extends StatelessWidget {
   final List<CategoryStat> stats;
   final double height;
@@ -86,7 +84,6 @@ class _PiePainter extends CustomPainter {
     final starts = <double>[];
     var start = -pi / 2;
 
-    // 1) irisan + data label
     for (final s in stats) {
       final sweep = s.percent / 100 * 2 * pi;
       final color = colorForCategory(s.category);
@@ -122,7 +119,6 @@ class _PiePainter extends CustomPainter {
       start += sweep;
     }
 
-    // 2) garis putih pemisah antar irisan (satu di atas pie untuk irisan pertama)
     for (final a in starts) {
       canvas.drawLine(
         center,
@@ -131,7 +127,6 @@ class _PiePainter extends CustomPainter {
       );
     }
 
-    // 3) cegah label bertumpuk: urutkan per sisi, dorong ke bawah bila rapat
     for (final side in [true, false]) {
       final group = items.where((i) => i.right == side).toList()
         ..sort((a, b) => a.y.compareTo(b.y));
@@ -141,7 +136,6 @@ class _PiePainter extends CustomPainter {
             group[i - 1].y + (group[i - 1].height + group[i].height) / 2 + 2;
         if (group[i].y < minY) group[i].y = minY;
       }
-      // kalau terlalu ke bawah, tarik kembali supaya tetap di dalam kanvas
       for (var i = group.length - 1; i >= 0; i--) {
         final maxY = i == group.length - 1
             ? size.height - group[i].height / 2
@@ -150,7 +144,6 @@ class _PiePainter extends CustomPainter {
       }
     }
 
-    // 4) garis penunjuk (lurus keluar dari pie, lalu melengkung) + tulisan
     for (final i in items) {
       final linePaint = Paint()
         ..color = i.color
@@ -158,17 +151,16 @@ class _PiePainter extends CustomPainter {
         ..style = PaintingStyle.stroke
         ..strokeCap = StrokeCap.round;
 
-      // arah radial dari pusat pie ke titik tepi irisan
       final dir = (i.edge - center) / radius;
       final straightEnd = center + dir * (radius + straightLead);
 
       final path = Path()
         ..moveTo(i.edge.dx, i.edge.dy)
-        ..lineTo(straightEnd.dx, straightEnd.dy) // bagian lurus
+        ..lineTo(straightEnd.dx, straightEnd.dy)
         ..cubicTo(
-          straightEnd.dx + dir.dx * curve, // lanjut searah radial
+          straightEnd.dx + dir.dx * curve,
           straightEnd.dy + dir.dy * curve,
-          i.endX + (i.right ? -curve : curve), // mendekat secara horizontal
+          i.endX + (i.right ? -curve : curve),
           i.y,
           i.endX,
           i.y,
@@ -181,7 +173,7 @@ class _PiePainter extends CustomPainter {
         i.name.paint(canvas, Offset(x, top));
         i.pct.paint(canvas, Offset(x, top + i.name.height));
       } else {
-        final x = i.endX - 4; // rata kanan: tulisan berakhir di garis
+        final x = i.endX - 4;
         i.name.paint(canvas, Offset(x - i.name.width, top));
         i.pct.paint(canvas, Offset(x - i.pct.width, top + i.name.height));
       }

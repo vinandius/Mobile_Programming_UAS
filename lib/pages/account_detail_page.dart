@@ -7,8 +7,6 @@ import '../utils/helpers.dart';
 import '../widgets/transaction_tile.dart';
 import 'add_transaction_page.dart';
 
-/// Semua transaksi yang menyentuh satu akun
-/// (termasuk transfer yang masuk ke akun ini)
 class AccountDetailPage extends ConsumerWidget {
   final int accountId;
 
@@ -34,7 +32,7 @@ class AccountDetailPage extends ConsumerWidget {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                const Text('Saldo', style: TextStyle(color: Colors.grey)),
+                const Text('Balance', style: TextStyle(color: Colors.grey)),
                 const SizedBox(height: 4),
                 Text(
                   formatRupiah(balance),
@@ -50,7 +48,7 @@ class AccountDetailPage extends ConsumerWidget {
           const Divider(height: 1),
           Expanded(
             child: txs.isEmpty
-                ? const Center(child: Text('Belum ada transaksi di akun ini'))
+                ? const Center(child: Text('No Transactions'))
                 : ListView.separated(
                     itemCount: txs.length,
                     separatorBuilder: (_, _) => const Divider(height: 1),

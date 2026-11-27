@@ -24,6 +24,13 @@ class AccountNotifier extends AsyncNotifier<List<Accounts>> {
     ref.invalidateSelf();
     await future;
   }
+
+  Future<void> delete(int id) async {
+    await DbHelper.instance.deleteAccount(id);
+    ref.invalidate(transactionProvider); // transaksi akun itu ikut terhapus
+    ref.invalidateSelf();
+    await future;
+  }
 }
 
 final accountProvider = AsyncNotifierProvider<AccountNotifier, List<Accounts>>(

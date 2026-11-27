@@ -84,6 +84,26 @@ class DbHelper {
         rethrow;
       }
     }
+
+    if (version < 3) {
+      db.execute('BEGIN');
+      try {
+        db.execute(
+          "ALTER TABLE accounts ADD COLUMN group_type TEXT NOT NULL DEFAULT 'Account'",
+        );
+        db.execute(
+          "UPDATE accounts SET group_type = 'Cash' WHERE name = 'Cash'",
+        );
+        db.execute(
+          "UPDATE accounts SET group_type = 'Card' WHERE name = 'Card'",
+        );
+        db.execute('PRAGMA user_version = 3');
+        db.execute('COMMIT');
+      } catch (e) {
+        db.execute('ROLLBACK');
+        rethrow;
+      }
+    }
   }
 
   String _hash(String password) {
@@ -102,10 +122,10 @@ class DbHelper {
       final userId = db.lastInsertRowId;
 
       for (final accountName in defaultAccounts) {
-        db.execute('INSERT INTO accounts (user_id, name) VALUES (?, ?)', [
-          userId,
-          accountName,
-        ]);
+        db.execute(
+          'INSERT INTO accounts (user_id, name, group_type) VALUES (?, ?, ?)',
+          [userId, accountName, accountName],
+        );
       }
       db.execute('COMMIT');
       return true;
@@ -133,10 +153,10 @@ class DbHelper {
 
     if (result.isEmpty) {
       for (final accountName in defaultAccounts) {
-        db.execute('INSERT INTO accounts (user_id, name) VALUES (?, ?)', [
-          userId,
-          accountName,
-        ]);
+        db.execute(
+          'INSERT INTO accounts (user_id, name, group_type) VALUES (?, ?, ?)',
+          [userId, accountName, accountName],
+        );
       }
       result = db.select(query, [userId]);
     }
@@ -147,17 +167,40 @@ class DbHelper {
   Future<void> addAccount(Accounts a) async {
     final db = await database;
     db.execute(
-      'INSERT INTO accounts (user_id, name, initial_balance) VALUES (?, ?, ?)',
-      [a.userId, a.name, a.initialBalance],
+      '''
+      INSERT INTO accounts (user_id, name, group_type, initial_balance)
+      VALUES (?, ?, ?, ?)
+      ''',
+      [a.userId, a.name, a.group, a.initialBalance],
     );
   }
 
   Future<void> editAccount(Accounts a) async {
     final db = await database;
     db.execute(
-      'UPDATE accounts SET name = ?, initial_balance = ? WHERE id = ?',
-      [a.name, a.initialBalance, a.id],
+      '''
+      UPDATE accounts
+      SET name = ?, group_type = ?, initial_balance = ?
+      WHERE id = ?
+      ''',
+      [a.name, a.group, a.initialBalance, a.id],
     );
+  }
+
+  Future<void> deleteAccount(int accountId) async {
+    final db = await database;
+    db.execute('BEGIN');
+    try {
+      db.execute(
+        'DELETE FROM transactions WHERE account_id = ? OR to_account_id = ?',
+        [accountId, accountId],
+      );
+      db.execute('DELETE FROM accounts WHERE id = ?', [accountId]);
+      db.execute('COMMIT');
+    } catch (e) {
+      db.execute('ROLLBACK');
+      rethrow;
+    }
   }
 
   Future<void> addTransaction(Transaction t) async {

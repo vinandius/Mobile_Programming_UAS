@@ -18,8 +18,6 @@ class AddAccountPage extends ConsumerStatefulWidget {
 }
 
 class _AddAccountPageState extends ConsumerState<AddAccountPage> {
-  static const _groups = ['Cash', 'Account', 'Card'];
-
   late final _nameCtrl = TextEditingController(
     text: widget.existing?.name ?? '',
   );

@@ -85,28 +85,25 @@ class AccountDetailPage extends ConsumerWidget {
   }
 }
 
-/// Pemilih periode di AppBar yang mengikuti tab aktif:
-/// Daily -> bulan, Monthly -> tahun, Annually -> tidak ada
 class _PeriodAction extends ConsumerWidget {
   const _PeriodAction();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // ref.watch ditaruh di sini (bukan di dalam builder di bawah)
     final month = ref.watch(selectedMonthProvider);
     final notifier = ref.read(selectedMonthProvider.notifier);
     final controller = DefaultTabController.of(context);
 
     return AnimatedBuilder(
-      animation: controller, // dibangun ulang tiap tab berpindah
+      animation: controller,
       builder: (context, _) {
         final index = controller.index;
-        if (index == 2) return const SizedBox.shrink(); // Annually
+        if (index == 2) return const SizedBox.shrink();
 
-        final isYear = index == 1; // Monthly memilih tahun
+        final isYear = index == 1;
         final label = isYear
             ? '${month.year}'
-            : '${monthNames[month.month - 1]} ${month.year}';
+            : '${monthsName[month.month - 1]} ${month.year}';
 
         return Padding(
           padding: const EdgeInsets.only(right: 4),

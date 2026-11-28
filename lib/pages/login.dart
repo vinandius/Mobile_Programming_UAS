@@ -18,6 +18,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
   bool _loading = false;
+  bool _hide = true;
   String? _error;
 
   @override
@@ -93,9 +94,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 TextField(
                   controller: _passCtrl,
                   obscureText: true,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Password',
                     border: OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _hide ? Icons.visibility_off : Icons.visibility,
+                      ),
+                      onPressed: () => setState(() => _hide = !_hide),
+                    ),
                   ),
                 ),
                 if (_error != null) ...[

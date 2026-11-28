@@ -14,6 +14,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   bool _loading = false;
+  bool _hide = true;
   String? _error;
 
   @override
@@ -94,9 +95,13 @@ class _RegisterPageState extends State<RegisterPage> {
             TextField(
               controller: _passwordCtrl,
               obscureText: true,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Password',
                 border: OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  icon: Icon(_hide ? Icons.visibility_off : Icons.visibility),
+                  onPressed: () => setState(() => _hide = !_hide),
+                ),
               ),
             ),
 

@@ -28,22 +28,6 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
     super.dispose();
   }
 
-  Widget _field(String hint, TextEditingController ctrl, {bool eye = false}) {
-    return TextField(
-      controller: ctrl,
-      obscureText: _hide,
-      decoration: InputDecoration(
-        hintText: hint,
-        suffixIcon: eye
-            ? IconButton(
-                icon: Icon(_hide ? Icons.visibility_off : Icons.visibility),
-                onPressed: () => setState(() => _hide = !_hide),
-              )
-            : null,
-      ),
-    );
-  }
-
   Future<void> _save() async {
     final user = ref.read(currentUserProvider);
     if (user == null) return;
@@ -116,21 +100,39 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
               TextField(
                 controller: _currentCtrl,
                 obscureText: true,
-                decoration: InputDecoration(border: OutlineInputBorder()),
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(_hide ? Icons.visibility_off : Icons.visibility),
+                    onPressed: () => setState(() => _hide = !_hide),
+                  ),
+                ),
               ),
               const SizedBox(height: 16, child: Text('New Password')),
               SizedBox(width: 32),
               TextField(
                 controller: _newCtrl,
                 obscureText: true,
-                decoration: InputDecoration(border: OutlineInputBorder()),
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(_hide ? Icons.visibility_off : Icons.visibility),
+                    onPressed: () => setState(() => _hide = !_hide),
+                  ),
+                ),
               ),
               const SizedBox(height: 16, child: Text('Confirm New Password')),
               SizedBox(width: 32),
               TextField(
                 controller: _confirmCtrl,
                 obscureText: true,
-                decoration: InputDecoration(border: OutlineInputBorder()),
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(_hide ? Icons.visibility_off : Icons.visibility),
+                    onPressed: () => setState(() => _hide = !_hide),
+                  ),
+                ),
               ),
               if (_error != null) ...[
                 const SizedBox(height: 12),

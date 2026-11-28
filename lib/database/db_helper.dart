@@ -10,6 +10,10 @@ import '../models/accounts.dart';
 import '../models/transaction.dart';
 import '../models/user.dart';
 
+enum ChangeEmailResult { success, wrongPassword, emailTaken }
+
+enum ChangePasswordResult { success, wrongPassword }
+
 class DbHelper {
   DbHelper._();
   static final DbHelper instance = DbHelper._();
@@ -143,6 +147,53 @@ class DbHelper {
     );
     if (result.isEmpty) return null;
     return User.fromMap(result.first);
+  }
+
+  Future<ChangeEmailResult> changeEmail({
+    required int userId,
+    required String newEmail,
+    required String password,
+  }) async {
+    final db = await database;
+
+    final owner = db.select(
+      'SELECT id FROM users WHERE id = ? AND password = ?',
+      [userId, _hash(password)],
+    );
+    if (owner.isEmpty) return ChangeEmailResult.wrongPassword;
+
+    final taken = db.select(
+      'SELECT id FROM users WHERE email = ? and id != ?',
+      [newEmail, userId],
+    );
+    if (taken.isNotEmpty) return ChangeEmailResult.emailTaken;
+
+    try {
+      db.execute('UPDATE users SET email = ? WHERE id = ?', [newEmail, userId]);
+    } on SqliteException {
+      return ChangeEmailResult.emailTaken;
+    }
+    return ChangeEmailResult.success;
+  }
+
+  Future<ChangePasswordResult> changePassword({
+    required int userId,
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    final db = await database;
+
+    final owner = db.select(
+      'SELECT id FROM users WHERE id = ? AND password = ?',
+      [userId, _hash(currentPassword)],
+    );
+    if (owner.isEmpty) return ChangePasswordResult.wrongPassword;
+
+    db.execute('UPDATE users SET password = ? WHERE id = ?', [
+      _hash(newPassword),
+      userId,
+    ]);
+    return ChangePasswordResult.success;
   }
 
   Future<List<Accounts>> getAccounts(int userId) async {

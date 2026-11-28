@@ -55,7 +55,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     ref.read(currentUserProvider.notifier).login(user);
 
-    // pushReplacement: halaman login dibuang, jadi tombol back tidak kembali ke login
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (_) => const MyHomePage()),

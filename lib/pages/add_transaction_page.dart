@@ -58,7 +58,6 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
   List<CategoryItem> get _currentCategories =>
       _type == 'income' ? incomeCategories : expenseCategories;
 
-  // akun pertama yang berbeda dari akun asal
   int? _defaultTo(List<Accounts> accounts, int? fromId) {
     for (final a in accounts) {
       if (a.id != fromId) return a.id;

@@ -18,6 +18,8 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
 
   bool _saving = false;
   bool _hide = true;
+  bool _hide1 = true;
+  bool _hide2 = true;
   String? _error;
 
   @override
@@ -95,11 +97,12 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              SizedBox(width: 16, child: Text('Current Password')),
+              SizedBox(width: 120, child: Text('Current Password')),
+              SizedBox(height: 5),
               SizedBox(width: 32),
               TextField(
                 controller: _currentCtrl,
-                obscureText: true,
+                obscureText: _hide,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   suffixIcon: IconButton(
@@ -108,29 +111,37 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
                   ),
                 ),
               ),
+              const SizedBox(height: 15),
               const SizedBox(height: 16, child: Text('New Password')),
+              const SizedBox(height: 5),
               SizedBox(width: 32),
               TextField(
                 controller: _newCtrl,
-                obscureText: true,
+                obscureText: _hide1,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   suffixIcon: IconButton(
-                    icon: Icon(_hide ? Icons.visibility_off : Icons.visibility),
-                    onPressed: () => setState(() => _hide = !_hide),
+                    icon: Icon(
+                      _hide1 ? Icons.visibility_off : Icons.visibility,
+                    ),
+                    onPressed: () => setState(() => _hide1 = !_hide1),
                   ),
                 ),
               ),
+              SizedBox(height: 15),
               const SizedBox(height: 16, child: Text('Confirm New Password')),
+              SizedBox(height: 5),
               SizedBox(width: 32),
               TextField(
                 controller: _confirmCtrl,
-                obscureText: true,
+                obscureText: _hide2,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   suffixIcon: IconButton(
-                    icon: Icon(_hide ? Icons.visibility_off : Icons.visibility),
-                    onPressed: () => setState(() => _hide = !_hide),
+                    icon: Icon(
+                      _hide2 ? Icons.visibility_off : Icons.visibility,
+                    ),
+                    onPressed: () => setState(() => _hide2 = !_hide2),
                   ),
                 ),
               ),

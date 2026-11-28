@@ -93,7 +93,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 const SizedBox(height: 16),
                 TextField(
                   controller: _passCtrl,
-                  obscureText: true,
+                  obscureText: _hide,
                   decoration: InputDecoration(
                     labelText: 'Password',
                     border: OutlineInputBorder(),

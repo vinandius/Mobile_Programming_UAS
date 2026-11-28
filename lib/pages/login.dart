@@ -32,7 +32,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final pass = _passCtrl.text;
 
     if (email.isEmpty || pass.isEmpty) {
-      setState(() => _error = 'Email dan password wajib diisi');
+      setState(() => _error = 'Email and password can not be empty!');
       return;
     }
 
@@ -48,7 +48,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     if (user == null) {
       setState(() {
         _loading = false;
-        _error = 'Email atau password salah';
+        _error = 'Email or password is wrong!';
       });
       return;
     }
